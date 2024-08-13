@@ -1,0 +1,27 @@
+import tensorflow as tf
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input, decode_predictions
+import numpy as np
+
+# 사전 학습된 VGG16 모델을 불러옵니다.
+model = VGG16(weights='imagenet')
+
+# 이미지를 분류하는 함수
+def classify_image(img_path):
+    # 이미지를 로드하고 크기를 모델 입력 크기로 조정합니다.
+    img = image.load_img(img_path, target_size=(224, 224))
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = preprocess_input(img_array)
+
+    # 모델을 사용해 이미지를 분류합니다.
+    predictions = model.predict(img_array)
+    decoded_predictions = decode_predictions(predictions, top=3)[0]
+    
+    # 결과를 출력합니다.
+    for i, (imagenet_id, label, score) in enumerate(decoded_predictions):
+        print(f"{i+1}. {label}: {score:.2f}")
+
+# 분류할 이미지 파일 경로를 지정합니다.
+img_path = 'path_to_your_image.jpg'
+classify_image(img_path)
